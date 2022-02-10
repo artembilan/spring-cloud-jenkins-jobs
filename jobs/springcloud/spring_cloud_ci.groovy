@@ -11,43 +11,34 @@ import org.springframework.jenkins.cloud.ci.SpringCloudReleaseTrainDocsMaker
 import org.springframework.jenkins.cloud.ci.VaultSpringCloudDeployBuildMaker
 import org.springframework.jenkins.cloud.common.AllCloudJobs
 import org.springframework.jenkins.cloud.common.CloudJdkConfig
+import org.springframework.jenkins.cloud.common.ReleaseTrains
 import org.springframework.jenkins.cloud.compatibility.BootCompatibilityBuildMaker
 
-import static org.springframework.jenkins.cloud.common.AllCloudJobs.ALL_DEFAULT_JOBS
-import static org.springframework.jenkins.cloud.common.AllCloudJobs.ALL_JOBS_WITH_TESTS
 import static org.springframework.jenkins.cloud.common.AllCloudJobs.CUSTOM_BUILD_JOBS
 import static org.springframework.jenkins.cloud.common.AllCloudJobs.INCUBATOR_JOBS
-import static org.springframework.jenkins.cloud.common.AllCloudJobs.JOBS_WITHOUT_TESTS
 import static org.springframework.jenkins.cloud.common.AllCloudJobs.JOBS_WITH_BRANCHES
 
 DslFactory dsl = this
 
-println "Projects with tests $ALL_JOBS_WITH_TESTS"
-println "Projects without tests $JOBS_WITHOUT_TESTS"
-
 // CI BUILDS
 // Branch build maker that allows you to build and deploy a branch - this will be done on demand
 new SpringCloudDeployBuildMaker(dsl).with { SpringCloudDeployBuildMaker maker ->
-	(ALL_DEFAULT_JOBS).each {
-		// JDK compatibility
-		// TODO: Future 18+
-		/*new SpringCloudDeployBuildMakerBuilder(dsl)
-				.prefix("spring-cloud-${jdk17()}").jdkVersion(jdk17())
-				.onGithubPush(false).cron(oncePerDay())
-				.upload(false).build().deploy(it)*/
-		// Normal CI build
-		new SpringCloudDeployBuildMakerBuilder(dsl)
-				.build().deploy(it)
-	}
-	JOBS_WITHOUT_TESTS.each {
-		// JDK compatibility
-		// TODO: Future 18+
-		/*new SpringCloudDeployBuildMakerBuilder(dsl)
-				.prefix("spring-cloud-${jdk17()}").jdkVersion(jdk17()).onGithubPush(false).cron(oncePerDay())
-				.upload(false).build().deployWithoutTests(it)*/
-		// Normal CI build
-		new SpringCloudDeployBuildMakerBuilder(dsl).jdkVersion(jdk17())
-				.build().deployWithoutTests(it)
+	ReleaseTrains.ALL.each { train ->
+		// each jdk in the train
+		def doUpload = true
+		train.jdks.each { jdk ->
+			// each project and branch
+			train.projectsWithBranch.each { project, branch ->
+				new SpringCloudDeployBuildMakerBuilder(dsl)
+						.organization(project.org)
+						.jdkVersion(jdk)
+						.upload(doUpload)
+						.cron(oncePerDay())
+						.prefix("${train.codename}-${project.name}-${jdk}-${branch}-ci")
+						.build().deploy(project.name, branch, project.hasTests)
+			}
+			doUpload = false // only upload baseline jdk
+		}
 	}
 }
 
@@ -108,32 +99,6 @@ new SpringCloudReleaseTrainDocsMaker(dsl).with {
 //	it.buildWithTests("spring-cloud-vault", "spring-cloud-vault", "main", oncePerDay(), true)
 //}
 
-// BRANCHES BUILD - spring-cloud organization
-// Build that allows you to deploy, and build gh-pages of multiple branches. Used for projects
-// where we support multiple versions
-JOBS_WITH_BRANCHES.each { String project, List<String> branches ->
-	if (CUSTOM_BUILD_JOBS.contains(project)) {
-		return
-	}
-	branches.each { String branch ->
-		boolean checkTests = !JOBS_WITHOUT_TESTS.contains(project)
-		// TODO: Branch jdk compat
-		// JDK compatibility
-		/*new SpringCloudDeployBuildMakerBuilder(dsl)
-				.prefix("spring-cloud-${jdk11()}").jdkVersion(jdk11())
-				.upload(false).build().deploy(it)
-		new SpringCloudDeployBuildMakerBuilder(dsl)
-				.prefix("spring-cloud-${jdk17()}").jdkVersion(jdk17())
-				.onGithubPush(false).cron(oncePerDay())
-				.upload(true).build().deploy(it)*/
-		new SpringCloudDeployBuildMakerBuilder(dsl).with {
-			jdkVersion(jdk8())
-		}.build().deploy(project, branch, checkTests)
-		/*new BootCompatibilityBuildMaker(dsl).with {
-			it.buildWithTests("${project}-${branch}", project, branch, oncePerDay(), checkTests)
-		}*/
-	}
-}
 // Release branches for Spring Cloud Release
 new SpringCloudDeployBuildMaker(dsl)
 		.deploy('spring-cloud-release', 'Hoxton', false)
