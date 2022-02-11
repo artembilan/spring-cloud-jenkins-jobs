@@ -1,10 +1,12 @@
 package org.springframework.jenkins.cloud.common
 
 import groovy.transform.CompileStatic
+import groovy.transform.EqualsAndHashCode
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.SimpleType
 
 @CompileStatic
+@EqualsAndHashCode
 class Project {
 
 	enum BuildSystem { MAVEN, GRADLE, BOTH }
@@ -41,31 +43,6 @@ Project{
     buildSystem=$buildSystem, 
     checkBootCompatibility=$checkBootCompatibility
 }"""
-	}
-
-	boolean equals(o) {
-		if (this.is(o)) return true
-		if (getClass() != o.class) return false
-
-		Project project = (Project) o
-
-		if (checkBootCompatibility != project.checkBootCompatibility) return false
-		if (hasTests != project.hasTests) return false
-		if (buildSystem != project.buildSystem) return false
-		if (name != project.name) return false
-		if (org != project.org) return false
-
-		return true
-	}
-
-	int hashCode() {
-		int result
-		result = (name != null ? name.hashCode() : 0)
-		result = 31 * result + (org != null ? org.hashCode() : 0)
-		result = 31 * result + (hasTests ? 1 : 0)
-		result = 31 * result + (buildSystem != null ? buildSystem.hashCode() : 0)
-		result = 31 * result + (checkBootCompatibility ? 1 : 0)
-		return result
 	}
 
 	static Project from(

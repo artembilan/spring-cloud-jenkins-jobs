@@ -25,7 +25,7 @@ DslFactory dsl = this
 new SpringCloudDeployBuildMaker(dsl).with { SpringCloudDeployBuildMaker maker ->
 	ReleaseTrains.ALL.each { train ->
 		// each jdk in the train
-		def doUpload = true
+		boolean doUpload = true
 		train.jdks.each { jdk ->
 			// each project and branch
 			train.projectsWithBranch.each { project, branch ->
