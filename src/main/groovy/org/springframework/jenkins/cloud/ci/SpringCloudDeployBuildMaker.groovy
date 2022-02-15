@@ -21,6 +21,7 @@ class SpringCloudDeployBuildMaker implements JdkConfig, TestPublisher, CloudCron
 	final String prefix
 	boolean upload = true
 	String jdkVersion = jdk17()
+	String jobName;
 
 	Closure<Node> slack = { Node node -> SpringCloudNotification.cloudSlack(node) }
 
@@ -53,10 +54,20 @@ class SpringCloudDeployBuildMaker implements JdkConfig, TestPublisher, CloudCron
 		return project.startsWith("spring-cloud-") ? "" : "spring-cloud-"
 	}
 
-	void deploy(String project, String branchToBuild, boolean checkTests = true) {
+	private String jobName(String branchToBuild, String project) {
+		if (jobName) {
+			return jobName
+		}
 		String projectNameWithBranch = branchToBuild ? "$branchToBuild-" : ''
 		String prefixedName = prefixedName(project)
-		dsl.job("${prefixedName}-${projectNameWithBranch}ci") {
+		String jobName = "${prefixedName}-${projectNameWithBranch}ci"
+		return jobName
+	}
+
+	void deploy(String project, String branchToBuild, boolean checkTests = true) {
+		String jobName = jobName(branchToBuild, project)
+
+		dsl.job(jobName) {
 			triggers {
 				cron cronValue
 				if (onGithubPush) {

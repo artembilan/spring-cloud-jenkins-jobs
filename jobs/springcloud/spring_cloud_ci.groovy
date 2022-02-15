@@ -34,7 +34,7 @@ new SpringCloudDeployBuildMaker(dsl).with { SpringCloudDeployBuildMaker maker ->
 						.jdkVersion(jdk)
 						.upload(doUpload)
 						.cron(oncePerDay())
-						.prefix("${train.codename}-${project.name}-${jdk}-${branch}-ci")
+						.jobName("${project.name}-${train.codename}-${branch}-${jdk}-ci")
 						.build().deploy(project.name, branch, project.hasTests)
 			}
 			doUpload = false // only upload baseline jdk
