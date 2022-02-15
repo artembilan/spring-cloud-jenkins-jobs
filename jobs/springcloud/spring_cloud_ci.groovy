@@ -23,7 +23,7 @@ DslFactory dsl = this
 // CI BUILDS
 // Branch build maker that allows you to build and deploy a branch - this will be done on demand
 new SpringCloudDeployBuildMaker(dsl).with { SpringCloudDeployBuildMaker maker ->
-	ReleaseTrains.ALL.each { train ->
+	ReleaseTrains.ALL.findAll { it.active }.each { train ->
 		// each jdk in the train
 		boolean doUpload = true
 		train.jdks.each { jdk ->

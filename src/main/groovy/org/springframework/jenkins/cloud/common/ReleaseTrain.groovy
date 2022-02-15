@@ -20,6 +20,8 @@ class ReleaseTrain implements JdkConfig {
 	// mapping of Project to branch
 	Map<Project, String> projectsWithBranch = new LinkedHashMap<>()
 
+	boolean active = true
+
 	// version (calver 2022.0)
 	// not just a string?
 	String version
