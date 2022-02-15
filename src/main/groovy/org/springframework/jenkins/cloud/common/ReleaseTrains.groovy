@@ -60,7 +60,7 @@ class ReleaseTrains {
 		version = "2021.0"
 		codename = "Jubilee"
 		bootVersion = "2.6.x"
-		jdks.addAll jdk8(), jdk11(), jdk17()
+		jdks += [jdk8(), jdk11(), jdk17()]
 		project BUILD, "3.1.x"
 		project BUS, "3.1.x"
 		project CIRCUITBREAKER, "2.1.x"
@@ -86,7 +86,7 @@ class ReleaseTrains {
 		codename = "Ilford"
 		bootVersion = "2.4.x"
 		bootCompatibility << "2.5.x"
-		jdks.addAll jdk8(), jdk11(), jdk17()
+		jdks += [jdk8(), jdk11(), jdk17()]
 		project BUILD, "3.0.x"
 		project BUS, "3.0.x"
 		project CIRCUITBREAKER, "2.0.x"
