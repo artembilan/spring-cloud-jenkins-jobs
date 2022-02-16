@@ -3,6 +3,7 @@ package springcloud
 import javaposse.jobdsl.dsl.DslFactory
 
 import org.springframework.jenkins.cloud.ci.CustomJobFactory
+import org.springframework.jenkins.cloud.ci.ProjectDeployBuildMaker
 import org.springframework.jenkins.cloud.ci.SpringCloudDeployBuildMaker
 import org.springframework.jenkins.cloud.ci.SpringCloudDeployBuildMakerBuilder
 import org.springframework.jenkins.cloud.ci.SpringCloudKubernetesDeployBuildMaker
@@ -12,7 +13,6 @@ import org.springframework.jenkins.cloud.ci.VaultSpringCloudDeployBuildMaker
 import org.springframework.jenkins.cloud.common.AllCloudJobs
 import org.springframework.jenkins.cloud.common.CloudJdkConfig
 import org.springframework.jenkins.cloud.common.ReleaseTrains
-import org.springframework.jenkins.cloud.compatibility.BootCompatibilityBuildMaker
 
 import static org.springframework.jenkins.cloud.common.AllCloudJobs.CUSTOM_BUILD_JOBS
 import static org.springframework.jenkins.cloud.common.AllCloudJobs.INCUBATOR_JOBS
@@ -22,23 +22,19 @@ DslFactory dsl = this
 
 // CI BUILDS
 // Branch build maker that allows you to build and deploy a branch - this will be done on demand
-new SpringCloudDeployBuildMaker(dsl).with { SpringCloudDeployBuildMaker maker ->
-	ReleaseTrains.ALL.findAll { it.active }.each { train ->
-		// each jdk in the train
-		boolean doUpload = true
-		train.jdks.each { jdk ->
-			// each project and branch
-			train.projectsWithBranch.each { project, branch ->
-				new SpringCloudDeployBuildMakerBuilder(dsl)
-						.organization(project.org)
-						.jdkVersion(jdk)
-						.upload(doUpload)
-						.cron(oncePerDay())
-						.jobName("${project.name}-${train.codename}-${branch}-${jdk}-ci")
-						.build().deploy(project.name, branch, project.hasTests)
-			}
-			doUpload = false // only upload baseline jdk
-		}
+ReleaseTrains.ALL.findAll { it.active }.each { train ->
+	// each jdk in the train
+	boolean doUpload = true
+	train.jdks.each { jdk ->
+		 // each project and branch
+		 train.projectsWithBranch.each { project, branch ->
+			 def maker = new ProjectDeployBuildMaker(dsl, train, project)
+			 maker.jdkVersion = jdk
+			 maker.upload = doUpload
+			 maker.branchToBuild = branch
+			 maker.deploy()
+		 }
+		 doUpload = false // only upload baseline jdk
 	}
 }
 

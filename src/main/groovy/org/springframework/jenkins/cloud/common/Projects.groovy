@@ -11,93 +11,94 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class Projects {
 
-	public static final Project BUILD = Project.from {
-		name = "spring-cloud-build"
-		hasTests = false
-	}
+	public static final Project BUILD = new Project(
+		name: "spring-cloud-build",
+		hasTests: false
+	)
 
-	public static final Project BUS = Project.from {
-		name = "spring-cloud-bus"
-	}
+	public static final Project BUS = new Project(
+		name: "spring-cloud-bus"
+	)
 
-	public static final Project CIRCUITBREAKER = Project.from {
-		name = "spring-cloud-circuitbreaker"
-	}
+	public static final Project CIRCUITBREAKER = new Project(
+		name: "spring-cloud-circuitbreaker"
+	)
 
-	public static final Project CLI = Project.from {
-		name = "spring-cloud-cli"
-	}
+	public static final Project CLI = new Project(
+		name: "spring-cloud-cli"
+	)
 
-	public static final Project CLOUDFOUNDRY = Project.from {
-		name = "spring-cloud-cloudfoundry"
-	}
+	public static final Project CLOUDFOUNDRY = new Project(
+		name: "spring-cloud-cloudfoundry"
+	)
 
-	public static final Project COMMONS = Project.from {
-		name = "spring-cloud-commons"
-	}
+	public static final Project COMMONS = new Project(
+		name: "spring-cloud-commons"
+	)
 
-	public static final Project CONFIG = Project.from {
-		name = "spring-cloud-config"
-	}
+	public static final Project CONFIG = new Project(
+		name: "spring-cloud-config"
+	)
 
-	public static final Project CONSUL = Project.from {
-		name = "spring-cloud-consul"
-	}
+	public static final Project CONSUL = new Project(
+		name: "spring-cloud-consul"
+	)
 
-	public static final Project CONTRACT = Project.from {
-		name = "spring-cloud-contract"
-	}
+	public static final Project CONTRACT = new Project(
+		name: "spring-cloud-contract"
+	)
 
-	public static final Project CORE_TESTS = Project.from {
-		name = "spring-cloud-core-tests"
-	}
+	public static final Project CORE_TESTS = new Project(
+		name: "spring-cloud-core-tests"
+	)
 
-	public static final Project GATEWAY = Project.from {
-		name = "spring-cloud-gateway"
-	}
+	public static final Project GATEWAY = new Project(
+		name: "spring-cloud-gateway"
+	)
 
-	public static final Project KUBERNETES = Project.from {
-		name = "spring-cloud-kubernetes"
-	}
+	public static final Project KUBERNETES = new Project(
+		name: "spring-cloud-kubernetes"
+	)
 
-	public static final Project NETFLIX = Project.from {
-		name = "spring-cloud-netflix"
-	}
+	public static final Project NETFLIX = new Project(
+		name: "spring-cloud-netflix"
+	)
 
-	public static final Project OPENFEIGN = Project.from {
-		name = "spring-cloud-openfeign"
-	}
+	public static final Project OPENFEIGN = new Project(
+		name: "spring-cloud-openfeign"
+	)
 
-	public static final Project RELEASE = Project.from {
-		name = "spring-cloud-release"
-		hasTests = false
-	}
+	public static final Project RELEASE = new Project(
+		name: "spring-cloud-release",
+		hasTests: false
+	)
 
-	public static final Project SLEUTH = Project.from {
-		name = "spring-cloud-sleuth"
-	}
+	public static final Project SLEUTH = new Project(
+		name: "spring-cloud-sleuth"
+	)
 
-	public static final Project TASK = Project.from {
-		name = "spring-cloud-task"
-	}
+	public static final Project TASK = new Project(
+		name: "spring-cloud-task"
+	)
 
-	public static final Project VAULT = Project.from {
-		name = "spring-cloud-vault"
-	}
+	public static final VaultProject VAULT = new VaultProject(
+		name: "spring-cloud-vault",
+		hasTests: false
+	)
 
-	public static final Project ZOOKEEPER = Project.from {
-		name = "spring-cloud-zookeeper"
-	}
+	public static final Project ZOOKEEPER = new Project(
+		name: "spring-cloud-zookeeper"
+	)
 
-	public static final Project SQUARE = Project.from {
-		name = "spring-cloud-square"
-		org = "spring-projects-experimental"
-	}
+	public static final Project SQUARE = new Project(
+		name: "spring-cloud-square",
+		org: "spring-projects-experimental"
+	)
 
-	public static final Project SLEUTH_OTEL = Project.from {
-		name = "spring-cloud-sleuth-otel"
-		org = "spring-projects-experimental"
-	}
+	public static final Project SLEUTH_OTEL = new Project(
+		name: "spring-cloud-sleuth-otel",
+		org: "spring-projects-experimental"
+	)
 
 	public static final List<Project> ALL = [BUILD, BUS, CIRCUITBREAKER, CLI, CLOUDFOUNDRY, COMMONS, CONFIG,
 											 CONSUL, CONTRACT, CORE_TESTS, GATEWAY, KUBERNETES, NETFLIX, OPENFEIGN,

@@ -33,113 +33,125 @@ import static org.springframework.jenkins.cloud.common.Projects.ZOOKEEPER
 @CompileStatic
 class ReleaseTrains {
 
-	public static final ReleaseTrain KILBURN = ReleaseTrain.from {
-		version = "2022.0"
-		codename = "Kilburn"
-		jdks << jdk17()
-		bootVersion = "3.0.x"
-		project BUILD, "main"
-		project BUS, "main"
-		project CIRCUITBREAKER, "main"
-		project COMMONS, "main"
-		project CONFIG, "main"
-		project CONSUL, "main"
-		project CONTRACT, "main"
-		project CORE_TESTS, "main"
-		project GATEWAY, "main"
-		project KUBERNETES, "main"
-		project NETFLIX, "main"
-		project OPENFEIGN, "main"
-		project RELEASE, "main"
-		project SLEUTH, "main"
-		project TASK, "main"
-		project VAULT, "main"
-		project ZOOKEEPER, "main"
-	}
-	public static final ReleaseTrain JUBILEE = ReleaseTrain.from {
-		version = "2021.0"
-		codename = "Jubilee"
-		bootVersion = "2.6.x"
-		jdks += [jdk8(), jdk11(), jdk17()]
-		project BUILD, "3.1.x"
-		project BUS, "3.1.x"
-		project CIRCUITBREAKER, "2.1.x"
-		project CLI, "3.1.x"
-		project CLOUDFOUNDRY, "3.1.x"
-		project COMMONS, "3.1.x"
-		project CONFIG, "3.1.x"
-		project CONSUL, "3.1.x"
-		project CONTRACT, "3.1.x"
-		project CORE_TESTS, "3.1.x"
-		project GATEWAY, "3.1.x"
-		project KUBERNETES, "2.1.x"
-		project NETFLIX, "3.1.x"
-		project OPENFEIGN, "3.1.x"
-		project RELEASE, "2021.0.x"
-		project SLEUTH, "3.1.x"
-		project TASK, "2.3.x"
-		project VAULT, "3.1.x"
-		project ZOOKEEPER, "3.1.x"
-	}
-	public static final ReleaseTrain ILFORD = ReleaseTrain.from {
-		version = "2020.0"
-		codename = "Ilford"
-		bootVersion = "2.4.x"
-		bootCompatibility << "2.5.x"
-		jdks += [jdk8(), jdk11(), jdk17()]
-		project BUILD, "3.0.x"
-		project BUS, "3.0.x"
-		project CIRCUITBREAKER, "2.0.x"
-		project CLI, "3.0.x"
-		project CLOUDFOUNDRY, "3.0.x"
-		project COMMONS, "3.0.x"
-		project CONFIG, "3.0.x"
-		project CONSUL, "3.0.x"
-		project CONTRACT, "3.0.x"
-		project CORE_TESTS, "3.0.x"
-		project GATEWAY, "3.0.x"
-		project KUBERNETES, "2.0.x"
-		project NETFLIX, "3.0.x"
-		project OPENFEIGN, "3.0.x"
-		project RELEASE, "2020.0.x"
-		project SLEUTH, "3.0.x"
-		project TASK, "2.3.x"
-		project VAULT, "3.0.x"
-		project ZOOKEEPER, "3.0.x"
-	}
-	public static final ReleaseTrain HOXTON = ReleaseTrain.from {
-		version = "Hoxton"
-		codename = version
-		active = false
-		jdks << jdk8()
-		bootVersion = "2.3.x"
-		project BUILD, "2.3.x"
-		project BUS, "2.2.x"
-		project CIRCUITBREAKER, "1.0.x"
-		project CLI, "2.2.x"
-		project CLOUDFOUNDRY, "2.2.x"
-		project COMMONS, "2.2.x"
-		project CONFIG, "2.2.x"
-		project CONSUL, "2.2.x"
-		project CONTRACT, "2.2.x"
-		project CORE_TESTS, "2.2.x"
-		project GATEWAY, "2.2.x"
-		project KUBERNETES, "1.1.x"
-		project NETFLIX, "2.2.x"
-		project OPENFEIGN, "2.2.x"
-		project RELEASE, "Hoxton.x"
-		project SLEUTH, "2.2.x"
-		project VAULT, "2.2.x"
-		project ZOOKEEPER, "2.2.x"
-	}
-	public static final ReleaseTrain EXPERIMENTAL = ReleaseTrain.from {
-		version = "Experimental"
-		codename = version
-		jdks << jdk8()
-		bootVersion = "2.6.x"
-		project SQUARE, "main"
-		project SLEUTH_OTEL, "main"
-	}
+	static CloudJdkConfig jdks = new CloudJdkConfig();
+
+	public static final ReleaseTrain KILBURN = new ReleaseTrain(
+		version: "2022.0",
+		codename: "Kilburn",
+		jdks: [jdks.jdk17()],
+		bootVersion: "3.0.x",
+		projectsWithBranch: [
+				(BUILD): "main",
+				(BUS): "main",
+				(CIRCUITBREAKER): "main",
+				(COMMONS): "main",
+				(CONFIG): "main",
+				(CONSUL): "main",
+				(CONTRACT): "main",
+				(CORE_TESTS): "main",
+				(GATEWAY): "main",
+				(KUBERNETES): "main",
+				(NETFLIX): "main",
+				(OPENFEIGN): "main",
+				(RELEASE): "main",
+				(SLEUTH): "main",
+				(TASK): "main",
+				(VAULT): "main",
+				(ZOOKEEPER): "main",
+	  	]
+	)
+	public static final ReleaseTrain JUBILEE = new ReleaseTrain(
+		version: "2021.0",
+		codename: "Jubilee",
+		bootVersion: "2.6.x",
+		jdks: [jdks.jdk8(), jdks.jdk11(), jdks.jdk17()],
+		projectsWithBranch: [
+				(BUILD): "3.1.x",
+				(BUS): "3.1.x",
+				(CIRCUITBREAKER): "2.1.x",
+				(CLI): "3.1.x",
+				(CLOUDFOUNDRY): "3.1.x",
+				(COMMONS): "3.1.x",
+				(CONFIG): "3.1.x",
+				(CONSUL): "3.1.x",
+				(CONTRACT): "3.1.x",
+				(CORE_TESTS): "3.1.x",
+				(GATEWAY): "3.1.x",
+				(KUBERNETES): "2.1.x",
+				(NETFLIX): "3.1.x",
+				(OPENFEIGN): "3.1.x",
+				(RELEASE): "2021.0.x",
+				(SLEUTH): "3.1.x",
+				(TASK): "2.3.x",
+				(VAULT): "3.1.x",
+				(ZOOKEEPER): "3.1.x",
+		]
+	)
+	public static final ReleaseTrain ILFORD = new ReleaseTrain(
+		version: "2020.0",
+		codename: "Ilford",
+		bootVersion: "2.4.x",
+		bootCompatibility: ["2.5.x",],
+		jdks: [jdks.jdk8(), jdks.jdk11(), jdks.jdk17()],
+		projectsWithBranch: [
+				(BUILD): "3.0.x",
+				(BUS): "3.0.x",
+				(CIRCUITBREAKER): "2.0.x",
+				(CLI): "3.0.x",
+				(CLOUDFOUNDRY): "3.0.x",
+				(COMMONS): "3.0.x",
+				(CONFIG): "3.0.x",
+				(CONSUL): "3.0.x",
+				(CONTRACT): "3.0.x",
+				(CORE_TESTS): "3.0.x",
+				(GATEWAY): "3.0.x",
+				(KUBERNETES): "2.0.x",
+				(NETFLIX): "3.0.x",
+				(OPENFEIGN): "3.0.x",
+				(RELEASE): "2020.0.x",
+				(SLEUTH): "3.0.x",
+				(TASK): "2.3.x",
+				(VAULT): "3.0.x",
+				(ZOOKEEPER): "3.0.x",
+		]
+	)
+	public static final ReleaseTrain HOXTON = new ReleaseTrain(
+		version: "Hoxton",
+		codename: "Hoxton",
+		active: false,
+		jdks: [jdks.jdk8()],
+		bootVersion: "2.3.x",
+		projectsWithBranch: [
+				(BUILD): "2.3.x",
+				(BUS): "2.2.x",
+				(CIRCUITBREAKER): "1.0.x",
+				(CLI): "2.2.x",
+				(CLOUDFOUNDRY): "2.2.x",
+				(COMMONS): "2.2.x",
+				(CONFIG): "2.2.x",
+				(CONSUL): "2.2.x",
+				(CONTRACT): "2.2.x",
+				(CORE_TESTS): "2.2.x",
+				(GATEWAY): "2.2.x",
+				(KUBERNETES): "1.1.x",
+				(NETFLIX): "2.2.x",
+				(OPENFEIGN): "2.2.x",
+				(RELEASE): "Hoxton.x",
+				(SLEUTH): "2.2.x",
+				(VAULT): "2.2.x",
+				(ZOOKEEPER): "2.2.x",
+		]
+	)
+	public static final ReleaseTrain EXPERIMENTAL = new ReleaseTrain(
+		version: "Experimental",
+		codename: "Experimental",
+		jdks: [jdks.jdk8()],
+		bootVersion: "2.6.x",
+		projectsWithBranch: [
+				(SQUARE): "main",
+				(SLEUTH_OTEL): "main",
+		]
+	)
 
 	public static final List<ReleaseTrain> ALL = [EXPERIMENTAL, HOXTON, ILFORD, JUBILEE, KILBURN]
 

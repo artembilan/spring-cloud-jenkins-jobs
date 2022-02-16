@@ -2,11 +2,11 @@ package org.springframework.jenkins.cloud.common
 
 import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
-import groovy.transform.stc.ClosureParams
-import groovy.transform.stc.SimpleType
+import groovy.transform.ToString
 
 @CompileStatic
 @EqualsAndHashCode
+@ToString
 class Project {
 
 	enum BuildSystem { MAVEN, GRADLE, BOTH }
@@ -28,31 +28,14 @@ class Project {
 
 	// custom build stuff (branch param, jdk param)
 		// see CustomJob
+	String customBuildCommand(String branch, String jdkVersion, boolean upload) {
+		return null;
+	}
+	String labelExpression(String jdkVersion) {
+		return null;
+	}
 
 	// behaviors
 		// 2 projects vaultjava8, vault extends vaultjava8 and overrides
 
-
-	@Override
-	String toString() {
-		return """\
-Project{
-    name='$name', 
-    org='$org', 
-    hasTests=$hasTests, 
-    buildSystem=$buildSystem, 
-    checkBootCompatibility=$checkBootCompatibility
-}"""
-	}
-
-	static Project from(
-			@DelegatesTo(value = Project, strategy = Closure.DELEGATE_FIRST)
-			@ClosureParams(value = SimpleType.class,
-					options = 'org.springframework.jenkins.cloud.common.Project')
-					Closure closure) {
-		def project = new Project();
-		closure.delegate = project;
-		closure()
-		return project
-	}
 }

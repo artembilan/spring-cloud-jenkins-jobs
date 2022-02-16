@@ -1,9 +1,10 @@
 package org.springframework.jenkins.cloud.ci
 
 import javaposse.jobdsl.dsl.DslFactory
-
 import org.springframework.jenkins.cloud.common.AllCloudJobs
 import org.springframework.jenkins.cloud.common.CloudCron
+import org.springframework.jenkins.cloud.common.Project
+import org.springframework.jenkins.cloud.common.ReleaseTrain
 import org.springframework.jenkins.cloud.common.SpringCloudJobs
 import org.springframework.jenkins.cloud.common.SpringCloudNotification
 import org.springframework.jenkins.common.job.JdkConfig
@@ -13,58 +14,26 @@ import org.springframework.jenkins.common.job.TestPublisher
 /**
  * @author Marcin Grzejszczak
  */
-class SpringCloudDeployBuildMaker implements JdkConfig, TestPublisher, CloudCron,
+class ProjectDeployBuildMaker implements JdkConfig, TestPublisher, CloudCron,
 		SpringCloudJobs, Maven {
 	private final DslFactory dsl
-	final String organization
-	final String prefix
+	private final ReleaseTrain train
+	private final Project project
 	boolean upload = true
-	String jdkVersion = jdk17()
-	String jobName;
-
+	String branchToBuild
+	String jdkVersion
 	Closure<Node> slack = { Node node -> SpringCloudNotification.cloudSlack(node) }
 
-	SpringCloudDeployBuildMaker(DslFactory dsl) {
-		this(dsl, 'spring-cloud', '')
-	}
 
-	SpringCloudDeployBuildMaker(DslFactory dsl, String organization) {
-		this(dsl, organization, '')
-	}
-
-	SpringCloudDeployBuildMaker(DslFactory dsl, String organization, String prefix) {
+    ProjectDeployBuildMaker(DslFactory dsl, ReleaseTrain train, Project project) {
 		this.dsl = dsl
-		this.organization = organization ?: 'spring-cloud'
-		this.prefix = prefix ?: ''
+		this.train = train
+		this.project = project
 	}
 
-	void deploy(String project, boolean checkTests = true) {
-		deploy(project, mainBranch(), checkTests)
-	}
-
-	private String prefix(String project) {
-		if (this.prefix) {
-			// spring-observability prefix & repo name
-			if (project == this.prefix) {
-				return ""
-			}
-			return this.prefix.endsWith("-") ? this.prefix : this.prefix + "-"
-		}
-		return project.startsWith("spring-cloud-") ? "" : "spring-cloud-"
-	}
-
-	private String jobName(String branchToBuild, String project) {
-		if (jobName) {
-			return jobName
-		}
-		String projectNameWithBranch = branchToBuild ? "$branchToBuild-" : ''
-		String prefixedName = prefixedName(project)
-		String jobName = "${prefixedName}-${projectNameWithBranch}ci"
-		return jobName
-	}
-
-	void deploy(String project, String branchToBuild, boolean checkTests = true) {
-		String jobName = jobName(branchToBuild, project)
+	void deploy() {
+		// TODO: assertions
+		String jobName = "${project.name}-${train.codename}-${branchToBuild}-${jdkVersion}-ci"
 
 		dsl.job(jobName) {
 			triggers {
@@ -77,10 +46,11 @@ class SpringCloudDeployBuildMaker implements JdkConfig, TestPublisher, CloudCron
 				stringParam(branchVarName(), branchToBuild ?: mainBranch(), 'Which branch should be built')
 			}
 			jdk branchToBuild != mainBranch() ? jdk8() : jdkVersion
+			label(project.labelExpression(jdkVersion))
 			scm {
 				git {
 					remote {
-						url "https://github.com/${organization}/${project}"
+						url "https://github.com/${project.org}/${project.name}"
 					}
 					branch "\$${branchVarName()}"
 					extensions {
@@ -102,6 +72,9 @@ class SpringCloudDeployBuildMaker implements JdkConfig, TestPublisher, CloudCron
 							githubUserCredentialId())
 					string(githubToken(), githubTokenCredId())
 				}
+				environmentVariables {
+					env('BRANCH', branchToBuild)
+				}
 				timeout {
 					noActivity(600)
 					failBuild()
@@ -121,7 +94,7 @@ class SpringCloudDeployBuildMaker implements JdkConfig, TestPublisher, CloudCron
 			configure {
 				slack.call(it as Node)
 			}
-			if (checkTests) {
+			if (project.hasTests) {
 				publishers {
 					archiveJunit mavenJUnitResults()
 				}
@@ -135,15 +108,12 @@ class SpringCloudDeployBuildMaker implements JdkConfig, TestPublisher, CloudCron
 		}
 	}
 
-	String prefixedName(String project) {
-		return prefix(project) + project
-	}
-
 	String buildCommand() {
+		String customBuildCommand = project.customBuildCommand(branchToBuild, jdkVersion, upload)
+		if (customBuildCommand) {
+			return customBuildCommand
+		}
 		return this.upload ? cleanDeployWithDocs() : cleanInstallWithoutDocs()
 	}
 
-	void deployWithoutTests(String project) {
-		deploy(project, false)
-	}
 }
